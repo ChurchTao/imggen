@@ -1,0 +1,81 @@
+name: Rust CLI Build Workflow
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-and-release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Set up Rust
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          override: true
+
+      - name: Build for Linux
+        run: cargo build --release
+
+      - name: Build for Windows
+        run: cargo build --release --target x86_64-pc-windows-gnu
+
+      - name: Build for macOS
+        run: cargo build --release --target x86_64-apple-darwin
+
+      - name: Build for macOS arm64
+        run: cargo build --release --target aarch64-apple-darwin
+
+      - name: Create Release
+        id: create_release
+        uses: actions/create-release@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          tag_name: ${{ github.ref }}
+          release_name: Release ${{ github.ref }}
+          draft: false
+          prerelease: false
+
+      - name: Upload Linux Binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/release/imggen
+          asset_name: imggen-linux
+          asset_content_type: application/octet-stream
+
+      - name: Upload Windows Binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/x86_64-pc-windows-gnu/release/imggen.exe
+          asset_name: imggen-windows.exe
+          asset_content_type: application/octet-stream
+
+      - name: Upload macOS Binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/x86_64-apple-darwin/release/imggen
+          asset_name: imggen-macos
+          asset_content_type: application/octet-stream
+
+      - name: Upload macOS arm64 Binary
+        uses: actions/upload-release-asset@v1
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        with:
+          upload_url: ${{ steps.create_release.outputs.upload_url }}
+          asset_path: ./target/aarch64-apple-darwin/release/imggen
+          asset_name: imggen-macos-arm64
+          asset_content_type: application/octet-stream
