@@ -16,9 +16,19 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Set up Rust
+        if: matrix.os != 'macos-latest'
         uses: actions-rs/toolchain@v1
         with:
           toolchain: stable
+          target: x86_64-apple-darwin, aarch64-apple-darwin
+          override: true
+
+      - name: Set up Rust
+        if: matrix.os == 'macos-latest'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: x86_64-apple-darwin, aarch64-apple-darwin
           override: true
 
       # windows和ubuntu的编译命令, macos的编译两个芯片平台【x86_64-apple-darwin, aarch64-apple-darwin】
