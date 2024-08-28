@@ -9,7 +9,17 @@ imggen is a test image generation tool that can generate images of various sizes
 
 ## Usage
 
-Add the following content to your `Cargo.toml`:
+If you have Rust installed, you can install imggen with the following command:
+
+```shell
+cargo install imggen
+```
+
+<!-- If you don't have Rust installed, you can install with Homebrew:
+
+```shell
+brew install ChurchTao/tap/imggen
+``` -->
 
 ```shell
 # sample
