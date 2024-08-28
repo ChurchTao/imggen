@@ -29,24 +29,27 @@ jobs:
 
       - name: Tar Release Binary
         run: |
-          tar czvf imggen-v${{ github.ref_name }}-x86_64-apple-darwin.tar.gz -C target/x86_64-apple-darwin/release imggen
-          tar czvf imggen-v${{ github.ref_name }}-aarch64-apple-darwin.tar.gz -C target/aarch64-apple-darwin/release imggen
+          tar czvf imggen-${{ github.ref_name }}-x86_64-apple-darwin.tar.gz -C target/x86_64-apple-darwin/release imggen
+          tar czvf imggen-${{ github.ref_name }}-aarch64-apple-darwin.tar.gz -C target/aarch64-apple-darwin/release imggen
 
       - name: Calculate SHA256
         id: sha256
         run: |
-          SHA256=$(shasum -a 256 imggen-v${{ github.ref_name }}-x86_64-apple-darwin.tar.gz | awk '{print $1}')
-          echo "sha256_x86_64=$SHA256" >>$GITHUB_OUTPUT
-          SHA256_AARCH64=$(shasum -a 256 imggen-v${{ github.ref_name }}-aarch64-apple-darwin.tar.gz | awk '{print $1}')
-          echo "sha256_aarch64=$SHA256_AARCH64" >>$GITHUB_OUTPUT
+          SHA256=$(shasum -a 256 imggen-${{ github.ref_name }}-x86_64-apple-darwin.tar.gz | awk '{print $1}')
+          echo "$SHA256" > imggen-${{ github.ref_name }}-x86_64-apple-darwin.tar.gz.sha256
+          SHA256_AARCH64=$(shasum -a 256 imggen-${{ github.ref_name }}-aarch64-apple-darwin.tar.gz | awk '{print $1}')
+          echo "$SHA256_AARCH64" > imggen-${{ github.ref_name }}-aarch64-apple-darwin.tar.gz.sha256
 
       - name: Release
         uses: softprops/action-gh-release@v2
+        if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            imggen-v${{ github.ref_name }}-x86_64-apple-darwin.tar.gz
-            imggen-v${{ github.ref_name }}-aarch64-apple-darwin.tar.gz
-          token: ${{ secrets.CUSTOM_GITHUB_TOKEN }}
+            imggen-${{ github.ref_name }}-x86_64-apple-darwin.tar.gz
+            imggen-${{ github.ref_name }}-aarch64-apple-darwin.tar.gz
+            imggen-${{ github.ref_name }}-x86_64-apple-darwin.tar.gz.sha256
+            imggen-${{ github.ref_name }}-aarch64-apple-darwin.tar.gz.sha256
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       # - name: Update Homebrew Formula
       #   run: |
@@ -54,7 +57,7 @@ jobs:
       #     class imggen < Formula
       #       desc "imggen is a test image generation tool that can generate images"
       #       homepage "https://github.com/ChurchTao/imggen"
-      #       url "https://github.com/ChurchTao/imggen/releases/download/v${{ github.ref_name }}/imggen-v${{ github.ref_name }}.tar.gz"
+      #       url "https://github.com/ChurchTao/imggen/releases/download/${{ github.ref_name }}/imggen-${{ github.ref_name }}.tar.gz"
       #       sha256 "${{ steps.sha256.outputs.sha256 }}"
 
       #       def install
@@ -76,4 +79,4 @@ jobs:
       #     destination-github-username: "your_github_username"
       #     destination-repository-name: "homebrew-yourprogram"
       #     user-email: "your-email@example.com"
-      #     commit-message: "Bump imggen to v${{ github.ref_name }}"
+      #     commit-message: "Bump imggen to ${{ github.ref_name }}"
