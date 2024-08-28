@@ -22,29 +22,12 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Set up Rust
-        if: matrix.os == 'macos-latest'
-        uses: actions-rs/toolchain@v1
-        with:
-          toolchain: stable
-          target: x86_64-apple-darwin, aarch64-apple-darwin
-          override: true
-
-      # windows和ubuntu的编译命令, macos的编译两个芯片平台【x86_64-apple-darwin, aarch64-apple-darwin】
-
       - name: Build for ${{ matrix.os }}
         if: matrix.os != 'macos-latest'
         run: cargo build --release
 
-      - name: Build for macOS
-        if: matrix.os == 'macos-latest'
-        run: cargo build --release --target x86_64-apple-darwin
-
-      - name: Build for macOS arm64
-        if: matrix.os == 'macos-latest'
-        run: cargo build --release --target aarch64-apple-darwin
-
       - name: Create Release
+        if: matrix.os != 'macos-latest'
         id: create_release
         uses: actions/create-release@v1
         env:
@@ -66,6 +49,18 @@ jobs:
           asset_name: imggen-${{ matrix.os }}
           asset_content_type: application/octet-stream
 
+      - name: Set up Rust
+        if: matrix.os == 'macos-latest'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: x86_64-apple-darwin
+          override: true
+
+      - name: Build for macOS
+        if: matrix.os == 'macos-latest'
+        run: cargo build --release --target x86_64-apple-darwin
+
       - name: Upload macOS Binary
         if: matrix.os == 'macos-latest'
         uses: actions/upload-release-asset@v1
@@ -76,6 +71,18 @@ jobs:
           asset_path: ./target/x86_64-apple-darwin/release/imggen
           asset_name: imggen-macos
           asset_content_type: application/octet-stream
+
+      - name: Set up Rust arm64
+        if: matrix.os == 'macos-latest'
+        uses: actions-rs/toolchain@v1
+        with:
+          toolchain: stable
+          target: aarch64-apple-darwin
+          override: true
+
+      - name: Build for macOS arm64
+        if: matrix.os == 'macos-latest'
+        run: cargo build --release --target aarch64-apple-darwin
 
       - name: Upload macOS arm64 Binary
         if: matrix.os == 'macos-latest'
