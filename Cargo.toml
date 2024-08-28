@@ -1,0 +1,18 @@
+[package]
+name = "imggen"
+version = "0.1.0"
+edition = "2021"
+authors = ["ChurchTao <swkzymlyy@gmail.com>"]
+description = "A simple image generator"
+repository = "https://github.com/ChurchTao/imggen"
+documentation = "https://docs.rs/imggen"
+license = "MIT"
+readme = "README.md"
+keywords = ["image", "generator", "rust"]
+rust-version = "1.63.0"
+
+[dependencies]
+clap = { version = "4.5.16", features = ["derive"] }
+image = "0.25.2"
+imageproc = "0.25.0"
+ab_glyph = { version = "0.2.23", default-features = false, features = ["std"] }
