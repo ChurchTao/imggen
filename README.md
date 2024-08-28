@@ -12,7 +12,23 @@ imggen is a test image generation tool that can generate images of various sizes
 Add the following content to your `Cargo.toml`:
 
 ```shell
+# sample
 imggen -w 1024 -h 768 -f png -n myimage -o ~/Desktop
+```
+
+```log
+# or
+
+Usage: imggen [OPTIONS]
+
+Options:
+  -w, --width <WIDTH>        Sets the width of the image [default: 800]
+  -h, --height <HEIGHT>      Sets the height of the image [default: 600]
+  -f, --format <FORMAT>      Sets the output format (png, jpg, etc.) [default: png]
+  -n, --filename <FILENAME>  Sets the output filename [default: output]
+  -o, --outdir <OUTDIR>      Sets the output directory [default: .]
+  -h, --help                 Print help
+  -V, --version              Print version
 ```
 
 ## License

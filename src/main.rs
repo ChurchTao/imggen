@@ -5,7 +5,9 @@ use imageproc::drawing::draw_text_mut;
 use std::path::PathBuf;
 
 #[derive(Parser)]
-#[clap(author, version, about, long_about = None)]
+#[clap(author="Church Tao", version
+, about="A simple image generator."
+, long_about = None)]
 struct Args {
     /// Sets the width of the image
     #[clap(short, long, value_name = "WIDTH", default_value_t = 800)]
