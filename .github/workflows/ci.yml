@@ -7,7 +7,11 @@ on:
 
 jobs:
   build-and-release:
-    runs-on: ubuntu-latest
+    runs-on: ${{ matrix.os }}
+    strategy:
+      matrix:
+        # No Linux test for now as it just fails due to not having a desktop environment.
+        os: [ubuntu-latest, macos-latest, windows-latest]
     steps:
       - uses: actions/checkout@v2
 
@@ -17,13 +21,18 @@ jobs:
           toolchain: stable
           override: true
 
-      - name: Build for Linux
+      # windows和ubuntu的编译命令, macos的编译两个芯片平台【x86_64-apple-darwin, aarch64-apple-darwin】
+
+      - name: Build for ${{ matrix.os }}
+        if: matrix.os != 'macos-latest'
         run: cargo build --release
 
       - name: Build for macOS
+        if: matrix.os == 'macos-latest'
         run: cargo build --release --target x86_64-apple-darwin
 
       - name: Build for macOS arm64
+        if: matrix.os == 'macos-latest'
         run: cargo build --release --target aarch64-apple-darwin
 
       - name: Create Release
@@ -37,17 +46,19 @@ jobs:
           draft: false
           prerelease: false
 
-      - name: Upload Linux Binary
+      - name: Upload Binary
+        if: matrix.os != 'macos-latest'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ steps.create_release.outputs.upload_url }}
           asset_path: ./target/release/imggen
-          asset_name: imggen-linux
+          asset_name: imggen-${{ matrix.os }}
           asset_content_type: application/octet-stream
 
       - name: Upload macOS Binary
+        if: matrix.os == 'macos-latest'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -58,6 +69,7 @@ jobs:
           asset_content_type: application/octet-stream
 
       - name: Upload macOS arm64 Binary
+        if: matrix.os == 'macos-latest'
         uses: actions/upload-release-asset@v1
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
