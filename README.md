@@ -15,11 +15,7 @@ If you have Rust installed, you can install imggen with the following command:
 cargo install imggen
 ```
 
-<!-- If you don't have Rust installed, you can install with Homebrew:
-
-```shell
-brew install ChurchTao/tap/imggen
-``` -->
+If you don't have Rust installed, you can download the binary from the [release page](https://github.com/ChurchTao/imggen/releases) and add it to your PATH.
 
 ```shell
 # sample
